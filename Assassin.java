@@ -46,4 +46,73 @@ public class Assassin
 		}
 	}
 	
+//MUTATOR METHODS
+//ACCESSOR METHODS
+	
+	//Returns a string representation of living people
+	public String playerList()
+	{
+		String list = "Alive:\n" + players.get(0);
+		
+		for(int i = 1; i < players.size(); i++)
+		{
+			if(i > 10)
+			{
+				list += "\n" + players.get(i);
+				
+			}
+			else
+				list += ", " + players.get(i);
+		}
+		return list;
+	}
+	
+	//Returns a string representation of dead people
+	public String graveyard()
+	{
+		if(grave.size() <= 0)
+		{
+			return "Graveyard:\nThe graveyard is empty! Nobody is dead.";
+		}
+		
+		String list = "Graveyard:\n" + grave.get(0);
+		for(int i = 1; i < grave.size(); i++)
+		{
+			if(i > 10)
+			{
+				list += "\n" + grave.get(i);
+				
+			}
+			else
+				list += ", " + grave.get(i);
+		}
+		return list;
+	}
+	
+	//Gives the amount of all players playing
+	public int playerCount()
+	{
+		return playerCount;
+	}
+
+	//Gives the amount of people alive
+	public int alive()
+	{
+		return players.size();
+	}
+	
+	//Gives the amount of people dead
+	public int tombstones()
+	{
+		return grave.size();
+	}
+	
+//MISC. METHODS
+	//Return a cluster of necessary fields for the client.
+	public void statHUD()
+	{
+		System.out.println("Stats:\n");
+		System.out.println("");
+		
+	}
 }
