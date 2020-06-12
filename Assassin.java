@@ -19,50 +19,77 @@ import java.util.*;
 public class Assassin 
 {
 	//Player fields
-	private static LinkedList<String> players;
+	private static LinkedList<String> killRing;
 	private static LinkedList<String> grave;
 	private static int playerCount;
 	
 	//Default construction
 	public Assassin()
 	{
-		  players = new LinkedList<>();
+		  killRing = new LinkedList<>();
 		  grave = new LinkedList<>();
 		  playerCount = 0;
 	}
 	
-	public Assassin(Scanner temp)
+	public Assassin(Scanner players)
 	{
-		readPlayers(temp);
+		killRing = new LinkedList<>();
+		readPlayers(players); //Accounts for players and playerCount
+		grave = new LinkedList<>();
+		Collections.shuffle(killRing); //Randomizes the list of players.
 	}
 	
 	//Reads players into the game from "Players.txt"
-	public void readPlayers(Scanner temp) 
+	public void readPlayers(Scanner players) 
 	{
-		while(temp.hasNext()) //Add all the scanner names into the players list.
+		while(players.hasNext()) //Add all the scanner names into the players list.
 		{
-			players.add(temp.next());
+			killRing.add(players.next());
 			playerCount++;
 		}
 	}
 	
 //MUTATOR METHODS
+	
+	//If necessary manually add a player to the game.
+	public void addPlayer(String name)
+	{
+		killRing.add(name);
+	}
+	
+	//When someone dies, they get sent from the alive list to the graveyard list.
+	public void assassinated(int indexFrom)
+	{
+		grave.add(killRing.get(indexFrom));
+		killRing.remove(indexFrom);
+	}
+	
+	
 //ACCESSOR METHODS
 	
-	//Returns a string representation of living people
-	public String playerList()
+	public String getAlivePlayer(int index)
 	{
-		String list = "Alive:\n" + players.get(0);
+		return killRing.get(index);
+	}
+	
+	public String getDeadPlayer(int index)
+	{
+		return grave.get(index);
+	}
+	//Returns a string representation of living people
+	public String alive()
+	{
+		String list = "Kill Ring:\n" + killRing.get(0);
 		
-		for(int i = 1; i < players.size(); i++)
+		for(int i = 1; i < killRing.size(); i++)
 		{
 			if(i > 10)
 			{
-				list += "\n" + players.get(i);
+				list += "\n" + killRing.get(i);
 				
 			}
 			else
-				list += ", " + players.get(i);
+				list += ", " + killRing.get(i);
 		}
 		return list;
 	}
@@ -96,9 +123,9 @@ public class Assassin
 	}
 
 	//Gives the amount of people alive
-	public int alive()
+	public int killRingSize()
 	{
-		return players.size();
+		return killRing.size();
 	}
 	
 	//Gives the amount of people dead
@@ -111,8 +138,43 @@ public class Assassin
 	//Return a cluster of necessary fields for the client.
 	public void statHUD()
 	{
-		System.out.println("Stats:\n");
-		System.out.println("");
+		System.out.println("Stats:");
+		System.out.println(alive() + "\nAlive: " + killRingSize() + "\n");
 		
+		System.out.println(graveyard() +"\nDead: "+ tombstones() + "\n");
+		
+	}
+	
+	//For the client use, kill someone from the alive list.
+	public String kill(int index)
+	{
+		String holder;
+		
+		if(killRingSize() == 2)
+		{
+			if(index == 1)
+				holder = killRing.get(index) + " was killed by " + killRing.get(index-1) + "\n";
+			else
+				holder = killRing.get(index) + " was killed by " + killRing.get(index+1) + "\n";
+			assassinated(index);
+			
+			return holder;
+		}
+		else
+		{
+			holder = killRing.get(index) + " was killed by " + killRing.get(index-1) + "\n";
+			assassinated(index);
+			return holder;
+		}
+	}
+	
+	public boolean lastPersonStanding()
+	{
+		if(killRingSize() == 1)
+		{
+			return true;
+		}
+		else
+			return false;
 	}
 }
