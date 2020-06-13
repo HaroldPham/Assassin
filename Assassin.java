@@ -1,149 +1,210 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+package finalProject;
+import java.util.*;
 /* Harold Pham, CS 211(B), Professor James Livingston, Final Project
  * Creation Date: 6/9/2020
  * Details: Chapter 16 Project #4
- * File Description: This "Main" class will be where the client begins the game.
+ * File Description: This "Assassin" Class will hold the technical code of the game.
  * Overview: Assassin is a game that takes a file of names, stores it into a LinkedList, 
  * and slowly removes individual names as if they were killed. 
  */
 
-public class Main 
+/*
+ * Creator Notes: 
+ * Have a "Graveyard" for killed players that can be accessed anytime.
+ * Have a method that shows the current stats of the game.
+ * If there is one person left alive then they are the winner and game over.
+ * 
+ */
+
+public class Assassin 
 {
-//FIELDS
-	//System fields
-	private static Scanner sysScan = new Scanner(System.in);
-	private static int numChoice;
-	private static String strChoice;
+	//Player fields
+	private static LinkedList<String> killRing;
+	private static LinkedList<String> grave;
+	private static int playerCount; //Holds the overall player count
+	private static int currentRound;
 	
-	private static Assassin game;
-	
-	
-//SYSTEM METHODS
-	public static void main(String[] args) 
+	//Default construction
+	public Assassin()
 	{
-		System.out.println("Welcome to Assassin:");
-		System.out.println("Synopsis: Provided with a text file named \"Players\" by either player or system "
-				+ "\nthis game will run through all the participants listed until one name is left. "
-				+ "\nIn that case that person will be the winner of the game. Choose options as you progress to access "
-				+ "\nother features of this game.");
-		System.out.println("\nContinue? (Press any key and enter): ");
-		strChoice = sysScan.nextLine();
-		if(strChoice != "")
+		  killRing = new LinkedList<>();
+		  grave = new LinkedList<>();
+		  playerCount = 0;
+		  currentRound = 1;
+	}
+	
+	public Assassin(Scanner players)
+	{
+		killRing = new LinkedList<>();
+		readPlayers(players); //Accounts for players and playerCount
+		grave = new LinkedList<>();
+		Collections.shuffle(killRing); //Randomizes the list of players.
+		currentRound = 1;
+	}
+	
+	//Reads players into the game from "Players.txt"
+	public void readPlayers(Scanner players) 
+	{
+		while(players.hasNext()) //Add all the scanner names into the players list.
 		{
-			optimize();
-			start();
+			killRing.add(players.next());
+			playerCount++;
 		}
 	}
 	
-	private static void optimize() //acts as if it were the constructor of the class
+//MUTATOR METHODS
+	
+	//Move the round up by 1
+	public void nextRound()
 	{
-		//First get the players list
-		boolean ok = false;
-		Scanner temp = new Scanner(System.in); //Temporary instantiation
-		while(ok == false)
+		currentRound++;
+	}
+	
+	//If necessary manually add a player to the game.
+	public void addPlayer(String name)
+	{
+		killRing.add(name);
+		playerCount++;
+	}
+	
+	//When someone dies, they get sent from the alive list to the graveyard list.
+	public void assassinated(int indexFrom)
+	{
+		grave.add(killRing.get(indexFrom));
+		killRing.remove(indexFrom);
+	}
+	
+	
+//ACCESSOR METHODS
+	
+	//Returns the current round
+	public int getRound()
+	{
+		return currentRound;
+	}
+	
+	//Returns a specific living player
+	public String getAlivePlayer(int index)
+	{
+		return killRing.get(index);
+	}
+	
+	//Return a specific dead player
+	public String getDeadPlayer(int index)
+	{
+		return grave.get(index);
+	}
+	
+	//Returns a string representation of living people
+	public String alive()
+	{
+		String list = "Kill Ring:\n\t" + killRing.get(0);
+		
+		for(int i = 1; i < killRing.size(); i++)
 		{
-		    try //Try reading the Players.txt file
+			if(i > 10)
 			{
-		    	temp = new Scanner(new File("Players.txt"));
-		    	ok = true;
-			}
-			catch(FileNotFoundException e) //If the file is not available then ask for input and try again.
-			{
-				System.out.println("Players.txt file not found, please import a Players.txt file into the project folder to be used.");
-				System.out.println("Press any key and enter once Players.txt is added.");
-				strChoice = sysScan.nextLine();
-				if(strChoice != "") //an artificial way to create a pause and give the user enough time to import the txt file.
-					ok = false;
-				else 
-					ok = false;
-			}
-		    
-		} //If the loop is broken that means the Players.txt file was found.
-		
-		ok = false;
-		
-		game = new Assassin(temp);
-		
-		System.out.println("Players shuffled.\n");
-		
-		while(ok == false)
-		{
-			System.out.println("These are your players, would you like to add more? (Choose a number): \n\t" + game.alive());
-			System.out.println("\n1: Yes\n2: No");
-			numChoice = sysScan.nextInt();
-			
-			if(numChoice == 1) //Attempt to add in the name to the killRing                                                 Come back to this
-			{
-				System.out.println("Type a persons name to be added: ");
-				try 
-				{
-					strChoice = sysScan.next();
-					game.addPlayer(strChoice);
-					System.out.println(strChoice + " has been added.\n");
-				}
-				catch(InputMismatchException e)
-				{
-					System.out.println("Please enter a valid single token name." + e);
-				}
+				list += "\n" + killRing.get(i);
+				
 			}
 			else
-				ok = true;
+				list += ", " + killRing.get(i);
 		}
-		
+		return list;
 	}
 	
-	//Game starts.
-	private static void start()
+	//Returns a string representation of dead people
+	public String graveyard()
 	{
-		System.out.println("\nRules: As the rounds progress and as you make your choices please be sure to only enter your choice \nthrough whole numbers unless"
-				+ " otherwise noted. (Press any key and enter to continue):\n");	
-		strChoice = sysScan.next();
-		
-		System.out.println("Game Starting...\n");
-		
-		while(!game.lastPersonStanding())
+		if(grave.size() <= 0)
 		{
-			System.out.println("Round " + game.getRound() + ":");
-			game.statHUD();
-			round();
+			return "Graveyard:\n\tThe graveyard is empty! Nobody is dead.";
 		}
 		
-		System.out.println("\nAll are gone except for one..." + game.getAlivePlayer(0) + " is the last one standing! (Press any key and enter to continue): ");
-		strChoice = sysScan.next();
-		System.out.println("\nPost game results: ");
-		System.out.println("\tFinal Round: " + (game.getRound()-1) + "\n");
-		game.statHUD();
+		String list = "Graveyard:\n\t" + grave.get(0);
+		for(int i = 1; i < grave.size(); i++)
+		{
+			if(i > 10)
+			{
+				list += "\n" + grave.get(i);
+				
+			}
+			else
+				list += ", " + grave.get(i);
+		}
+		return list;
 	}
 	
-	//Will facilitate each round and handle the game.
-	public static void round()
+	//Gives the amount of all players playing
+	public int playerCount()
 	{
-		System.out.println("1: Proceed\n2: End Game\n");
-		
-		numChoice = sysScan.nextInt();
-			
-		if(numChoice == 1)
-		{
-			int killZone = (int) (Math.random() * game.killRingSize()); //Generate the index of the killed person
-			System.out.println(game.kill(killZone));
-			game.nextRound();
-		}
+		return playerCount;
+	}
 
-		else if(numChoice == 2)
+	//Gives the count of people alive
+	public int killRingSize()
+	{
+		return killRing.size();
+	}
+	
+	//Gives the count of people dead
+	public int tombstones()
+	{
+		return grave.size();
+	}
+	
+//MISC. METHODS
+	
+	//Return a cluster of necessary fields for the client.
+	public void statHUD()
+	{
+		System.out.println("\t"+alive() + "\n\tAlive: " + killRingSize() + "\n");
+		
+		System.out.println("\t"+graveyard() +"\n\tDead: "+ tombstones() + "\n");
+		
+	}
+	
+	//For the client use, kill someone from the alive list.
+	public String kill(int person)
+	{
+		String holder;
+		
+		if(person == 0) //If the person is at the beginning of the LinkedList then they will be killed by the person at the end of the list.
+			holder = killRing.get(person) + " was killed by " + killRing.get(killRing.size()-1) + "!\n";
+		else //Returns that the person was killed by the person prior in the LinkedList.
+			holder = killRing.get(person) + " was killed by " + killRing.get(person-1) + "!\n";
+			
+		assassinated(person);
+		return holder;
+
+		//WIP ITERATOR SOLUTION BELOW
+		/*
+		Iterator<String> hold1 = killRing.iterator();
+		
+		String ret;
+		String holder = hold1.next();
+		
+		while(index >= 0 && hold1.hasNext())
 		{
-			System.out.println("Game Ending...");
-			System.exit(0);         //Taught to me by Aleks G. on StackOverflow. 
-									//https://stackoverflow.com/questions/22452930/terminating-a-java-program
+			index--;
+	        hold1.next();
+		}
+		
+		ret = hold1.next() + " was killed by " + holder + "\n";
+		assassinated(index);
+		
+		return ret;
+		*/
+	}
+	
+	//Checks if there is only one person left in the killRing
+	public boolean lastPersonStanding()
+	{
+		if(killRingSize() == 1)
+		{
+			return true;
 		}
 		else
-		{
-			System.out.println("Please enter a valid number.");
-			round();
-		}
-		
+			return false;
 	}
-
 }
