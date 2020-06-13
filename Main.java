@@ -1,8 +1,5 @@
-package finalProject;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 /* Harold Pham, CS 211(B), Professor James Livingston, Final Project
  * Creation Date: 6/9/2020
  * Details: Chapter 16 Project #4
@@ -20,7 +17,8 @@ public class Main
 	private static String strChoice;
 	
 	private static Assassin game;
-	private static int currentRound;
+	
+	
 //SYSTEM METHODS
 	public static void main(String[] args) 
 	{
@@ -40,7 +38,6 @@ public class Main
 	
 	private static void optimize() //acts as if it were the constructor of the class
 	{
-		currentRound = 1;
 		//First get the players list
 		boolean ok = false;
 		Scanner temp = new Scanner(System.in); //Temporary instantiation
@@ -72,11 +69,11 @@ public class Main
 		
 		while(ok == false)
 		{
-			System.out.println("These are your players, would you like to add more? (Choose a number): \n" + game.alive());
+			System.out.println("These are your players, would you like to add more? (Choose a number): \n\t" + game.alive());
 			System.out.println("\n1: Yes\n2: No");
 			numChoice = sysScan.nextInt();
 			
-			if(numChoice == 1) //Attempt to added in the name to the killRing                                                 Come back to this
+			if(numChoice == 1) //Attempt to add in the name to the killRing                                                 Come back to this
 			{
 				System.out.println("Type a persons name to be added: ");
 				try 
@@ -96,39 +93,33 @@ public class Main
 		
 	}
 	
+	//Game starts.
 	private static void start()
 	{
 		System.out.println("\nRules: As the rounds progress and as you make your choices please be sure to only enter your choice \nthrough whole numbers unless"
-				+ " otherwise noted. Do you agree?\n");
-		System.out.println("1: Yes\n2: No");
-		
-		numChoice = sysScan.nextInt();
-		
-		if(numChoice != 1) //Recurse until agreed upon or error is set.
-		{
-			start();
-		}
+				+ " otherwise noted. (Press any key and enter to continue):\n");	
+		strChoice = sysScan.next();
 		
 		System.out.println("Game Starting...\n");
 		
 		while(!game.lastPersonStanding())
 		{
-			System.out.println("Round " + currentRound + ":");
+			System.out.println("Round " + game.getRound() + ":");
 			game.statHUD();
 			round();
 		}
 		
 		System.out.println("\nAll are gone except for one..." + game.getAlivePlayer(0) + " is the last one standing! (Press any key and enter to continue): ");
 		strChoice = sysScan.next();
-		System.out.println("\nPost game status: ");
+		System.out.println("\nPost game results: ");
+		System.out.println("\tFinal Round: " + (game.getRound()-1) + "\n");
 		game.statHUD();
 	}
 	
 	//Will facilitate each round and handle the game.
 	public static void round()
 	{
-		
-		System.out.println("1: Proceed\n2: Check Game Progress\n3: End Game\n");
+		System.out.println("1: Proceed\n2: End Game\n");
 		
 		numChoice = sysScan.nextInt();
 			
@@ -136,14 +127,10 @@ public class Main
 		{
 			int killZone = (int) (Math.random() * game.killRingSize()); //Generate the index of the killed person
 			System.out.println(game.kill(killZone));
-			currentRound++;
+			game.nextRound();
 		}
+
 		else if(numChoice == 2)
-		{
-			game.statHUD();
-			round();
-		}
-		else if(numChoice == 3)
 		{
 			System.out.println("Game Ending...");
 			System.exit(0);         //Taught to me by Aleks G. on StackOverflow. 
@@ -154,8 +141,6 @@ public class Main
 			System.out.println("Please enter a valid number.");
 			round();
 		}
-		
-		
 		
 	}
 
