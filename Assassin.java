@@ -1,4 +1,3 @@
-package finalProject;
 import java.util.*;
 /* Harold Pham, CS 211(B), Professor James Livingston, Final Project
  * Creation Date: 6/9/2020
