@@ -21,7 +21,7 @@ public class Assassin
 	//Player fields
 	private static LinkedList<String> killRing;
 	private static LinkedList<String> grave;
-	private static int playerCount;
+	private static int playerCount; //Holds the overall player count
 	
 	//Default construction
 	public Assassin()
@@ -55,6 +55,7 @@ public class Assassin
 	public void addPlayer(String name)
 	{
 		killRing.add(name);
+		playerCount++;
 	}
 	
 	//When someone dies, they get sent from the alive list to the graveyard list.
@@ -67,19 +68,22 @@ public class Assassin
 	
 //ACCESSOR METHODS
 	
+	//Returns a specific living player
 	public String getAlivePlayer(int index)
 	{
 		return killRing.get(index);
 	}
 	
+	//Return a specific dead player
 	public String getDeadPlayer(int index)
 	{
 		return grave.get(index);
 	}
+	
 	//Returns a string representation of living people
 	public String alive()
 	{
-		String list = "Kill Ring:\n" + killRing.get(0);
+		String list = "Kill Ring:\n\t" + killRing.get(0);
 		
 		for(int i = 1; i < killRing.size(); i++)
 		{
@@ -99,10 +103,10 @@ public class Assassin
 	{
 		if(grave.size() <= 0)
 		{
-			return "Graveyard:\nThe graveyard is empty! Nobody is dead.";
+			return "Graveyard:\n\tThe graveyard is empty! Nobody is dead.";
 		}
 		
-		String list = "Graveyard:\n" + grave.get(0);
+		String list = "Graveyard:\n\t" + grave.get(0);
 		for(int i = 1; i < grave.size(); i++)
 		{
 			if(i > 10)
@@ -122,52 +126,64 @@ public class Assassin
 		return playerCount;
 	}
 
-	//Gives the amount of people alive
+	//Gives the count of people alive
 	public int killRingSize()
 	{
 		return killRing.size();
 	}
 	
-	//Gives the amount of people dead
+	//Gives the count of people dead
 	public int tombstones()
 	{
 		return grave.size();
 	}
 	
 //MISC. METHODS
+	
 	//Return a cluster of necessary fields for the client.
 	public void statHUD()
 	{
-		System.out.println("Stats:");
-		System.out.println(alive() + "\nAlive: " + killRingSize() + "\n");
+		System.out.println("\t"+alive() + "\n\tAlive: " + killRingSize() + "\n");
 		
-		System.out.println(graveyard() +"\nDead: "+ tombstones() + "\n");
+		System.out.println("\t"+graveyard() +"\n\tDead: "+ tombstones() + "\n");
 		
 	}
 	
+	//Precondition: index must be less than the size of the Kill Ring
 	//For the client use, kill someone from the alive list.
 	public String kill(int index)
 	{
 		String holder;
 		
-		if(killRingSize() == 2)
-		{
-			if(index == 1)
-				holder = killRing.get(index) + " was killed by " + killRing.get(index-1) + "\n";
-			else
-				holder = killRing.get(index) + " was killed by " + killRing.get(index+1) + "\n";
-			assassinated(index);
+		if(index == 0) //If the person is at the beginning of the LinkedList then they will be killed by the person at the end of the list.
+			holder = killRing.get(index) + " was killed by " + killRing.get(killRing.size()-1) + "!\n";
+		else //Returns that the person was killed by the person prior in the LinkedList.
+			holder = killRing.get(index) + " was killed by " + killRing.get(index-1) + "!\n";
 			
-			return holder;
-		}
-		else
+		assassinated(index);
+		return holder;
+
+		//WIP ITERATOR SOLUTION BELOW
+		/*
+		Iterator<String> hold1 = killRing.iterator();
+		
+		String ret;
+		String holder = hold1.next();
+		
+		while(index >= 0 && hold1.hasNext())
 		{
-			holder = killRing.get(index) + " was killed by " + killRing.get(index-1) + "\n";
-			assassinated(index);
-			return holder;
+			index--;
+	        hold1.next();
 		}
+		
+		ret = hold1.next() + " was killed by " + holder + "\n";
+		assassinated(index);
+		
+		return ret;
+		*/
 	}
 	
+	//Checks if there is only one person left in the killRing
 	public boolean lastPersonStanding()
 	{
 		if(killRingSize() == 1)
