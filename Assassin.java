@@ -166,6 +166,9 @@ public class Assassin
 	//For the client use, kill someone from the alive list.
 	public String kill(int person)
 	{
+		
+	//The index solution to this method
+		/*
 		String holder;
 		
 		if(person == 0) //If the person is at the beginning of the LinkedList then they will be killed by the person at the end of the list.
@@ -175,24 +178,48 @@ public class Assassin
 			
 		assassinated(person);
 		return holder;
-		//WIP ITERATOR SOLUTION BELOW
-		/*
+		*/
+		
+		
+	//The Iterator solution to this method
+		
+		String first = "";
+		String holder = "";
+		int iterate = person;
 		Iterator<String> hold1 = killRing.iterator();
 		
-		String ret;
-		String holder = hold1.next();
-		
-		while(index >= 0 && hold1.hasNext())
+	    if(person == 0) //If its the first person, save the first and last person in the list for later
+	    {
+	    	first = hold1.next(); //This will hold the first person in the list
+			
+			for(int i = 0; i < killRing.size()-1; i++) //Stops before the last person
+			{
+				hold1.next();
+			}
+			holder = hold1.next();
+		}
+		else if (person > 0 && person < killRing.size()) //If the person is within the list, find them
 		{
-			index--;
-	        hold1.next();
+			while(iterate > 0) //Stops before last person
+			{
+				iterate--;
+	        	holder = hold1.next();
+			}
+		}
+		else //if the person isn't within the list
+		{
+			return "Choose a valid person.";
 		}
 		
-		ret = hold1.next() + " was killed by " + holder + "\n";
-		assassinated(index);
+		String ret;
+		if(person == 0)
+			ret = first + " was killed by " + holder + "\n";
+		else
+			ret = hold1.next() + " was killed by " + holder + "\n";
+		assassinated(person);
 		
 		return ret;
-		*/
+		
 	}
 	
 	//Checks if there is only one person left in the killRing
