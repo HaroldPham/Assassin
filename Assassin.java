@@ -67,10 +67,10 @@ public class Assassin
 	}
 	
 	//When someone dies, they get sent from the alive list to the graveyard list.
-	public void assassinated(int indexFrom)
+	public void assassinated(int person)
 	{
-		grave.add(killRing.get(indexFrom));
-		killRing.remove(indexFrom);
+		grave.add(killRing.get(person));
+		killRing.remove(person);
 	}
 	
 	
@@ -83,15 +83,15 @@ public class Assassin
 	}
 	
 	//Returns a specific living player
-	public String getAlivePlayer(int index)
+	public String getAlivePlayer(int player)
 	{
-		return killRing.get(index);
+		return killRing.get(player);
 	}
 	
 	//Return a specific dead player
-	public String getDeadPlayer(int index)
+	public String getDeadPlayer(int player)
 	{
-		return grave.get(index);
+		return grave.get(player);
 	}
 	
 	//Returns a string representation of living people
@@ -175,7 +175,6 @@ public class Assassin
 			
 		assassinated(person);
 		return holder;
-
 		//WIP ITERATOR SOLUTION BELOW
 		/*
 		Iterator<String> hold1 = killRing.iterator();
