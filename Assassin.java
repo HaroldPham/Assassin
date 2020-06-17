@@ -184,7 +184,7 @@ public class Assassin
 	//The Iterator solution to this method
 		
 		String first = "";
-		String holder = "";
+		String killer = "";
 		int iterate = person;
 		Iterator<String> hold1 = killRing.iterator();
 		
@@ -192,34 +192,33 @@ public class Assassin
 	    {
 	    	first = hold1.next(); //This will hold the first person in the list
 			
-			for(int i = 0; i < killRing.size()-1; i++) //Stops before the last person
+			for(int i = 1; i < killRing.size()-1; i++) //Stops before the last person
 			{
 				hold1.next();
 			}
-			holder = hold1.next();
+			killer = hold1.next();
 		}
 		else if (person > 0 && person < killRing.size()) //If the person is within the list, find them
 		{
 			while(iterate > 0) //Stops before last person
 			{
 				iterate--;
-	        	holder = hold1.next();
+	        	killer = hold1.next();
 			}
 		}
 		else //if the person isn't within the list
 		{
 			return "Choose a valid person.";
 		}
+	    
 		
-		String ret;
+		String call;
 		if(person == 0)
-			ret = first + " was killed by " + holder + "\n";
+			call = first + " was killed by " + killer + "\n";
 		else
-			ret = hold1.next() + " was killed by " + holder + "\n";
+			call = hold1.next() + " was killed by " + killer + "\n";
 		assassinated(person);
-		
-		return ret;
-		
+		return call;
 	}
 	
 	//Checks if there is only one person left in the killRing
