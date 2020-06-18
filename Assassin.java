@@ -7,21 +7,17 @@ import java.util.*;
  * and slowly removes individual names as if they were killed. 
  */
 
-/*
- * Creator Notes: 
- * Have a "Graveyard" for killed players that can be accessed anytime.
- * Have a method that shows the current stats of the game.
- * If there is one person left alive then they are the winner and game over.
- * 
- */
-
 public class Assassin 
 {
+//FIELDS
+	
 	//Player fields
-	private static LinkedList<String> killRing;
-	private static LinkedList<String> grave;
+	private static LinkedList<String> killRing; //Players alive list
+	private static LinkedList<String> grave; //Players killed list
 	private static int playerCount; //Holds the overall player count
-	private static int currentRound;
+	private static int currentRound; //holds the current round count
+	
+//CONSTRUCTORS
 	
 	//Default construction
 	public Assassin()
@@ -32,23 +28,17 @@ public class Assassin
 		  currentRound = 1;
 	}
 	
+	//Personalized Constructor
 	public Assassin(Scanner players)
 	{
 		killRing = new LinkedList<>();
+		
 		readPlayers(players); //Accounts for players and playerCount
+		
 		grave = new LinkedList<>();
+		
 		Collections.shuffle(killRing); //Randomizes the list of players.
 		currentRound = 1;
-	}
-	
-	//Reads players into the game from "Players.txt"
-	public void readPlayers(Scanner players) 
-	{
-		while(players.hasNext()) //Add all the scanner names into the players list.
-		{
-			killRing.add(players.next());
-			playerCount++;
-		}
 	}
 	
 //MUTATOR METHODS
@@ -158,16 +148,14 @@ public class Assassin
 	public void statHUD()
 	{
 		System.out.println("\t"+alive() + "\n\tAlive: " + killRingSize() + "\n");
-		
 		System.out.println("\t"+graveyard() +"\n\tDead: "+ tombstones() + "\n");
-		
 	}
 	
-	//For the client use, kill someone from the alive list.
+	//Visual confirmation to kill someone from the alive list.
 	public String kill(int person)
 	{
+	//The index-based solution to this method
 		
-	//The index solution to this method
 		/*
 		String holder;
 		
@@ -180,8 +168,7 @@ public class Assassin
 		return holder;
 		*/
 		
-		
-	//The Iterator solution to this method
+	//The Iterator-based solution to this method
 		
 		String first = "";
 		String killer = "";
@@ -211,7 +198,6 @@ public class Assassin
 			return "Choose a valid person.";
 		}
 	    
-		
 		String call;
 		if(person == 0)
 			call = first + " was killed by " + killer + "\n";
@@ -231,4 +217,15 @@ public class Assassin
 		else
 			return false;
 	}
+	
+	//Populates the killRing list with players from the "Players.txt" file
+	public void readPlayers(Scanner players) 
+	{
+		while(players.hasNext()) //Add all the scanner names into the players list.
+		{
+			killRing.add(players.next());
+			playerCount++;
+		}
+	}
+	
 }
